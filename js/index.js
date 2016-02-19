@@ -9,7 +9,7 @@ import { Router, Route, Link, browserHistory } from 'react-router';
 import App from "./app";
 
 render((
-  <Router>
+  <Router history={browserHistory}>
     <Route path="/" component={App}>
     </Route>
   </Router>

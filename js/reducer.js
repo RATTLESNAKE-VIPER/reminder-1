@@ -1,21 +1,10 @@
-export function addTodo(text) {
-  return {
-    type: 'ADD_TODO',
-    text
-  }
-}
-
-export function editTodo(id, text) {
-  return {
-    type: 'EDIT_TODO',
-    id,
-    text
-  }
-}
-
-export function removeTodo(id) {
-  return {
-    type: 'REMOVE_TODO',
-    id
+export default function counter(state, action) {
+  switch(action.type){
+    case "increment":
+      return state+1
+    case "decrement":
+      return state-1
+    default:
+      return state;
   }
 }
