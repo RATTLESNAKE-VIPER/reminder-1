@@ -2,6 +2,7 @@ var gulp        = require('gulp');
 var browserify  = require('browserify');
 var source      = require('vinyl-source-stream');
 var buffer      = require('vinyl-buffer');
+var babelify    = require("babelify");
 var plugins     = require('gulp-load-plugins')();
 var runSequence = require('run-sequence');
 var watchLess   = require('gulp-watch-less');
@@ -13,7 +14,7 @@ gulp.task('less', function () {
     .pipe(watchLess('less/style.less'))
     .pipe(less())
     .pipe(gulp.dest('css'));
-});
+})
 
 gulp.task('webserver', function(){
   gulp.src('./')
@@ -37,13 +38,13 @@ gulp.task('browserify',function(cb) {
   .pipe(buffer())
   .pipe(plugins.addSrc('index.html'))
   .pipe(gulp.dest('./'))
-});
+})
 
 gulp.task('build', function() {
   runSequence(
     ['browserify'],['less'],['webserver']
   );
-});
+})
 
 gulp.task('watch', function(){
   gulp.watch(['./js/*.js','./less/*.less'],['less','browserify'])
