@@ -3,7 +3,7 @@ import { register } from "../sdk/sdk";
 
 class SignUp extends React.Component {
 	constructor(){
-		super()
+		super();
 		this.state = {
 			type         : "password",
 			showPassword :false
@@ -20,7 +20,6 @@ class SignUp extends React.Component {
 			alert("Please fill all fields!")
 			return;
 		}
-
 	  register(userDetails)
 		.then(function(userdata){
 			console.log("userdata-",userdata)
@@ -47,7 +46,7 @@ class SignUp extends React.Component {
 				<input ref="password" className="form-control" type={type} placeholder="password"></input>
 				<input ref="confirm_password" className="form-control" type={type} placeholder="confirm password"></input>
 				<input className="form-control" type="checkbox" onChange={this.showPassword.bind(this)}>Show password</input>
-				<input className="form-control" type="button" value="Submit" onClick={this.signUp.bind(this)}></input>
+				<input className="form-control" type="button" value="Register" onClick={this.signUp.bind(this)}></input>
 			</div>
 		)
 	}
