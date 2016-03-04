@@ -77,18 +77,35 @@ var App = function (_React$Component) {
 	}
 
 	_createClass(App, [{
+		key: 'routeHandler',
+		value: function routeHandler() {
+			console.log("props------", this.context.router.transitionTo);
+			this.props.history.replaceState(null, "/signup");
+		}
+	}, {
 		key: 'componentWillMount',
-		value: function componentWillMount() {}
+		value: function componentWillMount() {
+			this.routeHandler();
+			//this.transitionTo('/signup')
+		}
+	}, {
+		key: 'see',
+		value: function see() {
+			//this.props.history.transitionTo("/signup")
+		}
 	}, {
 		key: 'render',
 		value: function render() {
-			return _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement(_signup2.default, null));
+			return _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement('input', { type: 'button', value: 'signup', onClick: this.see.bind(this) }), _react2.default.createElement(_reactRouter.Link, { to: "/signup" }, 'Go to signup'), this.props.children);
 		}
 	}]);
 
 	return App;
 }(_react2.default.Component);
 
+App.contextTypes = {
+	router: _react2.default.PropTypes.object
+};
 exports.default = App;
 
 },{"./signup":9,"./tasks":11,"react":229,"react-router":65,"rest":241}],4:[function(require,module,exports){
@@ -830,6 +847,20 @@ function counter(state, action) {
 },{}],8:[function(require,module,exports){
 "use strict";
 
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () {
+	function defineProperties(target, props) {
+		for (var i = 0; i < props.length; i++) {
+			var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+		}
+	}return function (Constructor, protoProps, staticProps) {
+		if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	};
+}();
+
 var _react = require("react");
 
 var _react2 = _interopRequireDefault(_react);
@@ -837,8 +868,72 @@ var _react2 = _interopRequireDefault(_react);
 var _sdk = require("../sdk/sdk");
 
 function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
+	return obj && obj.__esModule ? obj : { default: obj };
 }
+
+function _classCallCheck(instance, Constructor) {
+	if (!(instance instanceof Constructor)) {
+		throw new TypeError("Cannot call a class as a function");
+	}
+}
+
+function _possibleConstructorReturn(self, call) {
+	if (!self) {
+		throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+	}return call && (typeof call === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+	if (typeof superClass !== "function" && superClass !== null) {
+		throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+	}subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
+
+var SignIn = function (_React$Component) {
+	_inherits(SignIn, _React$Component);
+
+	function SignIn() {
+		_classCallCheck(this, SignIn);
+
+		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SignIn).call(this));
+
+		_this.state = {
+			type: "password",
+			showPassword: false
+		};
+		return _this;
+	}
+
+	_createClass(SignIn, [{
+		key: "showPassword",
+		value: function showPassword(e) {
+			if (this.state.showPassword) {
+				this.setState({
+					type: "password",
+					showPassword: false
+				});
+			} else {
+				this.setState({
+					type: "text",
+					showPassword: true
+				});
+			}
+		}
+	}, {
+		key: "signIn",
+		value: function signIn() {}
+	}, {
+		key: "render",
+		value: function render() {
+			var type = this.state.type;
+			return _react2.default.createElement("div", { className: "signin-wrapper form-group" }, _react2.default.createElement("input", { ref: "username", className: "form-control", placeholder: "username" }), _react2.default.createElement("input", { ref: "password", className: "form-control", type: type, placeholder: "password" }), _react2.default.createElement("input", { className: "form-control", type: "checkbox", onChange: this.showPassword.bind(this) }, "Show password"), _react2.default.createElement("input", { className: "form-control", type: "button", value: "Login", onClick: this.signIn.bind(this) }));
+		}
+	}]);
+
+	return SignIn;
+}(_react2.default.Component);
+
+exports.default = SignIn;
 
 },{"../sdk/sdk":282,"react":229}],9:[function(require,module,exports){
 "use strict";
@@ -913,7 +1008,6 @@ var SignUp = function (_React$Component) {
 				alert("Please fill all fields!");
 				return;
 			}
-
 			(0, _sdk.register)(userDetails).then(function (userdata) {
 				console.log("userdata-", userdata);
 			});
@@ -937,7 +1031,7 @@ var SignUp = function (_React$Component) {
 		key: "render",
 		value: function render() {
 			var type = this.state.type;
-			return _react2.default.createElement("div", { className: "signup-wrapper form-group" }, _react2.default.createElement("input", { ref: "username", className: "form-control", placeholder: "username" }), _react2.default.createElement("input", { ref: "password", className: "form-control", type: type, placeholder: "password" }), _react2.default.createElement("input", { ref: "confirm_password", className: "form-control", type: type, placeholder: "confirm password" }), _react2.default.createElement("input", { className: "form-control", type: "checkbox", onChange: this.showPassword.bind(this) }, "Show password"), _react2.default.createElement("input", { className: "form-control", type: "button", value: "Submit", onClick: this.signUp.bind(this) }));
+			return _react2.default.createElement("div", { className: "signup-wrapper form-group" }, _react2.default.createElement("input", { ref: "username", className: "form-control", placeholder: "username" }), _react2.default.createElement("input", { ref: "password", className: "form-control", type: type, placeholder: "password" }), _react2.default.createElement("input", { ref: "confirm_password", className: "form-control", type: type, placeholder: "confirm password" }), _react2.default.createElement("input", { className: "form-control", type: "checkbox", onChange: this.showPassword.bind(this) }, "Show password"), _react2.default.createElement("input", { className: "form-control", type: "button", value: "Register", onClick: this.signUp.bind(this) }));
 		}
 	}]);
 
