@@ -51,17 +51,59 @@ app.post('/add',  function(req, res){
 app.post('/registerUser',  function(req, res){
   console.log("req",req.body)
   var user = new User({
-    username         : req.body.username,
-    password         : req.body.password,
-    confirm_password : req.body.confirm_password
+    password : req.body.password,
+    username : req.body.username,
+    email    : req.body.email
   });
   user.save(function (err, data) {
+    console.log("saved---------",data)
     if (err)
       res.send(err);
     else
       res.send("Successfully registered!!");
   });
 })
+
+app.post('/login',  function(req, res){
+  User.findOne(req.body,function(err, data){
+    if(!data){
+      res.send("You need to register first!")
+    } else{
+      var user = data;
+      user.update({
+        authtoken: userHelper.generateAuthtoken()
+      }, {upsert: true}, function(err, data){
+      })
+    }
+  })
+})
+
+app.post('/auth_login', function(req, res){
+  User.findOne({email: req.body.email},function(err, data){
+    if(!data){
+      var user = new User({
+        authtoken: userHelper.generateAuthtoken(),
+        email    : req.body.email
+      });
+      user.save(function (err, data) {
+        if (err)
+          res.send(err);
+        else
+          res.send(data);
+      });
+    } else{
+      var user = data;
+      user.update({
+        authtoken: userHelper.generateAuthtoken()
+      }, function(err, updated){
+        User.findOne({_id:user._id},function(err, data){
+          res.send(data)
+        })
+      })
+    }
+  })
+})
+
 
 app.listen(3000, function () {
   console.log('Reminder app listening on port 3000!');
