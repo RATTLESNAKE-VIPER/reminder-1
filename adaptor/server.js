@@ -5,7 +5,8 @@ var mongoose   = require("mongoose")
 var userHelper = require("./user-helper")
 var bodyParser = require("body-parser")
 var Task       = require("./schema").TaskSchema
-var User			 = require("./schema").UserSchema
+var User       = require("./schema").UserSchema
+var rest       = require('rest')
 
 mongoose.connect('mongodb://localhost/reminder')
 var db = mongoose.connection
@@ -64,7 +65,7 @@ app.post('/registerUser',  function(req, res){
   });
 })
 
-app.post('/login',  function(req, res){
+/*app.post('/login',  function(req, res){
   User.findOne(req.body,function(err, data){
     if(!data){
       res.send("You need to register first!")
@@ -76,35 +77,48 @@ app.post('/login',  function(req, res){
       })
     }
   })
-})
+})*/
 
 app.post('/auth_login', function(req, res){
-  User.findOne({email: req.body.email},function(err, data){
-    if(!data){
-      var user = new User({
-        authtoken: userHelper.generateAuthtoken(),
-        email    : req.body.email
-      });
-      user.save(function (err, data) {
-        if (err)
-          res.send(err);
-        else
-          res.send(data);
-      });
-    } else{
-      var user = data;
-      user.update({
-        authtoken: userHelper.generateAuthtoken()
-      }, function(err, updated){
-        User.findOne({_id:user._id},function(err, data){
-          res.send(data)
+  rest('https://www.googleapis.com/oauth2/v1/tokeninfo?'+req.body.access_token)
+  .then(function(data){
+    var gmailUser = JSON.parse(data.entity)
+    User.findOne({email: gmailUser.email},function(err, data){
+      console.log("data in new user-------",data)
+      if(!data){
+        var user = new User({
+          authtoken: userHelper.generateAuthtoken(),
+          email    : gmailUser.email,
+          auth_data        : {
+            google: {
+              uid   : gmailUser.user_id,
+              email : gmailUser.email
+            }
+          }
+        });
+        user.save(function (err, data) {
+          if(err)
+            res.send(err);
+          else{
+            console.log("data in new user-------",data)
+            res.send(data);
+          }
+        });
+      } else{
+        var user = data;
+        user.update({
+          authtoken: userHelper.generateAuthtoken()
+        }, function(err, updated){
+          User.findOne({_id:user._id},function(err, data){
+            console.log("data in old user-------",data)
+            res.send(data)
+          })
         })
-      })
-    }
+      }
+    })
   })
 })
 
-
 app.listen(3000, function () {
-  console.log('Reminder app listening on port 3000!');
+  console.log('Reminder app listening on port 3000!')
 });
