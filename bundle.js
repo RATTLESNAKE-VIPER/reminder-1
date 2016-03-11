@@ -45,6 +45,8 @@ var _signup2 = _interopRequireDefault(_signup);
 
 var _reactRouter = require('react-router');
 
+var _sdk = require('../sdk/sdk');
+
 function _interopRequireDefault(obj) {
 	return obj && obj.__esModule ? obj : { default: obj };
 }
@@ -73,30 +75,44 @@ var App = function (_React$Component) {
 	function App() {
 		_classCallCheck(this, App);
 
-		return _possibleConstructorReturn(this, Object.getPrototypeOf(App).apply(this, arguments));
+		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(App).call(this));
+
+		_this.state = {
+			user: undefined
+		};
+		return _this;
 	}
 
 	_createClass(App, [{
-		key: 'routeHandler',
-		value: function routeHandler() {
-			console.log("props------", this.context.router.transitionTo);
-			this.props.history.replaceState(null, "/signup");
+		key: 'componentDidUpdate',
+		value: function componentDidUpdate(prevProps, prevState) {
+			if (this.state.user && prevState.user !== this.state.user) {
+				console.log("replace");
+				this.props.history.replace({ pathname: "/dashboard", query: { user: JSON.stringify(this.state.user) } });
+			}
 		}
 	}, {
 		key: 'componentWillMount',
 		value: function componentWillMount() {
-			this.routeHandler();
-			//this.transitionTo('/signup')
-		}
-	}, {
-		key: 'see',
-		value: function see() {
-			//this.props.history.transitionTo("/signup")
+			var self = this;
+			var access_token = window.location.href.split("&")[1];
+			if (!this.state.user) {
+				this.props.history.replace("/signup");
+			}
+			if (access_token) {
+				(0, _sdk.auth_login)(access_token).then(function (data) {
+					if (data.entity) {
+						self.setState({
+							user: data.entity
+						});
+					}
+				});
+			}
 		}
 	}, {
 		key: 'render',
 		value: function render() {
-			return _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement('input', { type: 'button', value: 'signup', onClick: this.see.bind(this) }), _react2.default.createElement(_reactRouter.Link, { to: "/signup" }, 'Go to signup'), this.props.children);
+			return _react2.default.createElement('div', { className: 'container' }, this.props.children);
 		}
 	}]);
 
@@ -108,7 +124,113 @@ App.contextTypes = {
 };
 exports.default = App;
 
-},{"./signup":9,"./tasks":11,"react":229,"react-router":65,"rest":241}],4:[function(require,module,exports){
+},{"../sdk/sdk":272,"./signup":9,"./tasks":11,"react":229,"react-router":65,"rest":231}],4:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () {
+	function defineProperties(target, props) {
+		for (var i = 0; i < props.length; i++) {
+			var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ("value" in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+		}
+	}return function (Constructor, protoProps, staticProps) {
+		if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+	};
+}();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+var _rest = require("rest");
+
+var _rest2 = _interopRequireDefault(_rest);
+
+var _tasks = require("./tasks");
+
+var _tasks2 = _interopRequireDefault(_tasks);
+
+function _interopRequireDefault(obj) {
+	return obj && obj.__esModule ? obj : { default: obj };
+}
+
+function _classCallCheck(instance, Constructor) {
+	if (!(instance instanceof Constructor)) {
+		throw new TypeError("Cannot call a class as a function");
+	}
+}
+
+function _possibleConstructorReturn(self, call) {
+	if (!self) {
+		throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+	}return call && (typeof call === "object" || typeof call === "function") ? call : self;
+}
+
+function _inherits(subClass, superClass) {
+	if (typeof superClass !== "function" && superClass !== null) {
+		throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+	}subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } });if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+}
+
+var Dashboard = function (_React$Component) {
+	_inherits(Dashboard, _React$Component);
+
+	function Dashboard() {
+		_classCallCheck(this, Dashboard);
+
+		var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Dashboard).call(this));
+
+		_this.state = {
+			list: []
+		};
+		return _this;
+	}
+
+	_createClass(Dashboard, [{
+		key: "componentWillMount",
+		value: function componentWillMount() {
+			var self = this;
+			console.log("in Dashboard---------", this.props.location);
+			/*rest('http://localhost:3000/getList')
+   .then(function(res){
+   	self.setState({
+     	list: JSON.parse(res.entity)
+     })
+   })*/
+		}
+	}, {
+		key: "addTask",
+		value: function addTask() {
+			console.log("add task", this.refs.input.value);
+			var task = this.refs.input.value;
+			client({
+				path: "add",
+				method: "POST",
+				entity: {
+					task: task,
+					time: new Date(),
+					complete: false
+				}
+			}).then(function (res) {
+				alert(res.entity);
+			});
+		}
+	}, {
+		key: "render",
+		value: function render() {
+			return _react2.default.createElement("div", null, _react2.default.createElement("textarea", { ref: "input", placeholder: "Enter task" }), _react2.default.createElement("button", { onClick: this.addTask.bind(this) }, "Add task"));
+		}
+	}]);
+
+	return Dashboard;
+}(_react2.default.Component);
+
+exports.default = Dashboard;
+
+},{"./tasks":11,"react":229,"rest":231}],5:[function(require,module,exports){
 "use strict";
 
 require("../css/lib/bootstrap.min.css");
@@ -116,12 +238,6 @@ require("../css/lib/bootstrap.min.css");
 require("./lib/bootstrap/bootstrap.min.js");
 
 require("../css/style.css");
-
-var _redux = require("redux");
-
-var _reducer = require("./reducer");
-
-var _reducer2 = _interopRequireDefault(_reducer);
 
 var _react = require("react");
 
@@ -147,15 +263,17 @@ var _signin = require("./signin");
 
 var _signin2 = _interopRequireDefault(_signin);
 
+var _dashboard = require("./dashboard");
+
+var _dashboard2 = _interopRequireDefault(_dashboard);
+
 function _interopRequireDefault(obj) {
    return obj && obj.__esModule ? obj : { default: obj };
 }
 
-(0, _reactDom.render)(_react2.default.createElement(_reactRouter.Router, { history: _reactRouter.browserHistory }, _react2.default.createElement(_reactRouter.Route, { path: "/", component: _app2.default }, _react2.default.createElement(_reactRouter.Route, { path: "/signup", component: _signup2.default }), _react2.default.createElement(_reactRouter.Route, { path: "/signin", component: _signin2.default }))), document.getElementById("app"));
+(0, _reactDom.render)(_react2.default.createElement(_reactRouter.Router, { history: _reactRouter.browserHistory }, _react2.default.createElement(_reactRouter.Route, { path: "/", component: _app2.default }, _react2.default.createElement(_reactRouter.Route, { path: "/signup", component: _signup2.default }), _react2.default.createElement(_reactRouter.Route, { path: "/signin", component: _signin2.default }), _react2.default.createElement(_reactRouter.Route, { path: "/dashboard", component: _dashboard2.default }))), document.getElementById("app"));
 
-//import { Provider } from 'react-redux';
-
-},{"../css/lib/bootstrap.min.css":1,"../css/style.css":2,"./app":3,"./lib/bootstrap/bootstrap.min.js":5,"./notFound":6,"./reducer":7,"./signin":8,"./signup":9,"react":229,"react-dom":37,"react-router":65,"redux":235}],5:[function(require,module,exports){
+},{"../css/lib/bootstrap.min.css":1,"../css/style.css":2,"./app":3,"./dashboard":4,"./lib/bootstrap/bootstrap.min.js":6,"./notFound":7,"./signin":8,"./signup":9,"react":229,"react-dom":37,"react-router":65}],6:[function(require,module,exports){
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -751,7 +869,7 @@ if ("undefined" == typeof jQuery) throw new Error("Bootstrap's JavaScript requir
   });
 }(jQuery);
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -826,25 +944,7 @@ var NF = function (_React$Component) {
 
 exports.default = NF;
 
-},{"react":229,"rest":241,"rest/interceptor/errorCode":246,"rest/interceptor/mime":247}],7:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = counter;
-function counter(state, action) {
-  switch (action.type) {
-    case "increment":
-      return state + 1;
-    case "decrement":
-      return state - 1;
-    default:
-      return state;
-  }
-}
-
-},{}],8:[function(require,module,exports){
+},{"react":229,"rest":231,"rest/interceptor/errorCode":236,"rest/interceptor/mime":237}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -921,12 +1021,21 @@ var SignIn = function (_React$Component) {
 		}
 	}, {
 		key: "signIn",
-		value: function signIn() {}
+		value: function signIn() {
+			var userDetails = {
+				username: this.refs.username.value,
+				email: this.refs.email.value,
+				password: this.refs.password.value
+			};
+			(0, _sdk.login)(userDetails).then(function (user) {
+				console.log("user-----------", user);
+			});
+		}
 	}, {
 		key: "render",
 		value: function render() {
 			var type = this.state.type;
-			return _react2.default.createElement("div", { className: "signin-wrapper form-group" }, _react2.default.createElement("input", { ref: "username", className: "form-control", placeholder: "username" }), _react2.default.createElement("input", { ref: "password", className: "form-control", type: type, placeholder: "password" }), _react2.default.createElement("input", { className: "form-control", type: "checkbox", onChange: this.showPassword.bind(this) }, "Show password"), _react2.default.createElement("input", { className: "form-control", type: "button", value: "Login", onClick: this.signIn.bind(this) }));
+			return _react2.default.createElement("div", { className: "signin-wrapper form-group" }, _react2.default.createElement("input", { ref: "email", className: "form-control", placeholder: "email" }), _react2.default.createElement("input", { ref: "username", className: "form-control", placeholder: "username" }), _react2.default.createElement("input", { ref: "password", className: "form-control", type: type, placeholder: "password" }), _react2.default.createElement("input", { className: "form-control", type: "checkbox", onChange: this.showPassword.bind(this) }, "Show password"), _react2.default.createElement("input", { className: "form-control", type: "button", value: "Login", onClick: this.signIn.bind(this) }));
 		}
 	}]);
 
@@ -935,8 +1044,8 @@ var SignIn = function (_React$Component) {
 
 exports.default = SignIn;
 
-},{"../sdk/sdk":282,"react":229}],9:[function(require,module,exports){
-"use strict";
+},{"../sdk/sdk":272,"react":229}],9:[function(require,module,exports){
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -952,11 +1061,13 @@ var _createClass = function () {
 	};
 }();
 
-var _react = require("react");
+var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _sdk = require("../sdk/sdk");
+var _sdk = require('../sdk/sdk');
+
+var _reactRouter = require('react-router');
 
 function _interopRequireDefault(obj) {
 	return obj && obj.__esModule ? obj : { default: obj };
@@ -996,15 +1107,15 @@ var SignUp = function (_React$Component) {
 	}
 
 	_createClass(SignUp, [{
-		key: "signUp",
+		key: 'signUp',
 		value: function signUp(e) {
 			e.preventDefault();
 			var userDetails = {
-				username: this.refs.username.value,
 				password: this.refs.password.value,
-				confirm_password: this.refs.confirm_password.value
+				username: this.refs.username.value,
+				email: this.refs.email.value
 			};
-			if (userDetails.username.trim() === "" || userDetails.password.trim() === "" || userDetails.confirm_password.trim() === "") {
+			if (userDetails.username.trim() === "" || userDetails.password.trim() === "" || this.refs.confirm_password.value.trim() === "" || userDetails.email.trim() === "") {
 				alert("Please fill all fields!");
 				return;
 			}
@@ -1013,8 +1124,9 @@ var SignUp = function (_React$Component) {
 			});
 		}
 	}, {
-		key: "showPassword",
+		key: 'showPassword',
 		value: function showPassword(e) {
+
 			if (this.state.showPassword) {
 				this.setState({
 					type: "password",
@@ -1028,10 +1140,30 @@ var SignUp = function (_React$Component) {
 			}
 		}
 	}, {
-		key: "render",
+		key: 'authLogin',
+		value: function authLogin() {
+			var e = function e(u) {
+				return encodeURIComponent(u);
+			};
+			var client_secret = "SQ9vGcHSKroo-tvVFXO-Wi21";
+			var base = 'https://accounts.google.com/o/oauth2/auth';
+			var response_type = e('token');
+			var client_id = e('173788126945-ir2vi7o6924uon6g72h2ibrr69j3vai5.apps.googleusercontent.com');
+			var redirect_uri = e('http://localhost:8000/');
+			var scope = e('https://www.googleapis.com/auth/userinfo.email');
+			var state = e('lollalal');
+			var approval_prompt = e('auto');
+
+			base = base + '?response_type=' + response_type + '&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + scope + '&state=' + state + '&approval_prompt=' + approval_prompt;
+			console.log("base---------", base);
+			window.location.href = base;
+			return false;
+		}
+	}, {
+		key: 'render',
 		value: function render() {
 			var type = this.state.type;
-			return _react2.default.createElement("div", { className: "signup-wrapper form-group" }, _react2.default.createElement("input", { ref: "username", className: "form-control", placeholder: "username" }), _react2.default.createElement("input", { ref: "password", className: "form-control", type: type, placeholder: "password" }), _react2.default.createElement("input", { ref: "confirm_password", className: "form-control", type: type, placeholder: "confirm password" }), _react2.default.createElement("input", { className: "form-control", type: "checkbox", onChange: this.showPassword.bind(this) }, "Show password"), _react2.default.createElement("input", { className: "form-control", type: "button", value: "Register", onClick: this.signUp.bind(this) }));
+			return _react2.default.createElement('div', { className: 'signup-wrapper form-group' }, _react2.default.createElement('button', { onClick: this.authLogin.bind(this) }, 'Sign in with google'));
 		}
 	}]);
 
@@ -1040,7 +1172,7 @@ var SignUp = function (_React$Component) {
 
 exports.default = SignUp;
 
-},{"../sdk/sdk":282,"react":229}],10:[function(require,module,exports){
+},{"../sdk/sdk":272,"react":229,"react-router":65}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1359,24 +1491,56 @@ exports['default'] = {
 "use strict";
 
 exports.__esModule = true;
+var _slice = Array.prototype.slice;
 exports.loopAsync = loopAsync;
 
 function loopAsync(turns, work, callback) {
-  var currentTurn = 0;
-  var isDone = false;
+  var currentTurn = 0,
+      isDone = false;
+  var sync = false,
+      hasNext = false,
+      doneArgs = undefined;
 
   function done() {
     isDone = true;
+    if (sync) {
+      // Iterate instead of recursing if possible.
+      doneArgs = [].concat(_slice.call(arguments));
+      return;
+    }
+
     callback.apply(this, arguments);
   }
 
   function next() {
-    if (isDone) return;
+    if (isDone) {
+      return;
+    }
 
-    if (currentTurn < turns) {
+    hasNext = true;
+    if (sync) {
+      // Iterate instead of recursing if possible.
+      return;
+    }
+
+    sync = true;
+
+    while (!isDone && currentTurn < turns && hasNext) {
+      hasNext = false;
       work.call(this, currentTurn++, next, done);
-    } else {
-      done.apply(this, arguments);
+    }
+
+    sync = false;
+
+    if (isDone) {
+      // This means the loop finished synchronously.
+      callback.apply(this, doneArgs);
+      return;
+    }
+
+    if (currentTurn >= turns && hasNext) {
+      isDone = true;
+      callback();
     }
   }
 
@@ -2115,8 +2279,8 @@ function createHistory() {
   var finishTransition = options.finishTransition;
   var saveState = options.saveState;
   var go = options.go;
-  var keyLength = options.keyLength;
   var getUserConfirmation = options.getUserConfirmation;
+  var keyLength = options.keyLength;
 
   if (typeof keyLength !== 'number') keyLength = DefaultKeyLength;
 
@@ -2495,19 +2659,20 @@ function createMemoryHistory() {
 
   function getCurrentLocation() {
     var entry = entries[current];
-    var key = entry.key;
     var basename = entry.basename;
     var pathname = entry.pathname;
     var search = entry.search;
 
     var path = (basename || '') + pathname + (search || '');
 
-    var state = undefined;
-    if (key) {
+    var key = undefined,
+        state = undefined;
+    if (entry.key) {
+      key = entry.key;
       state = readState(key);
     } else {
-      state = null;
       key = history.createKey();
+      state = null;
       entry.key = key;
     }
 
@@ -2620,8 +2785,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
 var _ExecutionEnvironment = require('./ExecutionEnvironment');
 
 var _PathUtils = require('./PathUtils');
@@ -2637,11 +2800,10 @@ var _deprecate2 = _interopRequireDefault(_deprecate);
 function useBasename(createHistory) {
   return function () {
     var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    var history = createHistory(options);
+
     var basename = options.basename;
-
-    var historyOptions = _objectWithoutProperties(options, ['basename']);
-
-    var history = createHistory(historyOptions);
 
     // Automatically use the value of <base href> in HTML
     // documents as basename if it's not explicitly given.
@@ -2760,8 +2922,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
 var _warning = require('warning');
 
 var _warning2 = _interopRequireDefault(_warning);
@@ -2799,12 +2959,11 @@ function isNestedObject(object) {
 function useQueries(createHistory) {
   return function () {
     var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+    var history = createHistory(options);
+
     var stringifyQuery = options.stringifyQuery;
     var parseQueryString = options.parseQueryString;
-
-    var historyOptions = _objectWithoutProperties(options, ['stringifyQuery', 'parseQueryString']);
-
-    var history = createHistory(historyOptions);
 
     if (typeof stringifyQuery !== 'function') stringifyQuery = defaultStringifyQuery;
 
@@ -3173,7 +3332,7 @@ exports.stringify = function (obj) {
 		}
 
 		if (Array.isArray(val)) {
-			return val.sort().map(function (val2) {
+			return val.slice().sort().map(function (val2) {
 				return strictUriEncode(key) + '=' + strictUriEncode(val2);
 			}).join('&');
 		}
@@ -25092,690 +25251,6 @@ module.exports = warning;
 module.exports = require('./lib/React');
 
 },{"./lib/React":97}],230:[function(require,module,exports){
-'use strict';
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-exports.__esModule = true;
-exports["default"] = applyMiddleware;
-
-var _compose = require('./compose');
-
-var _compose2 = _interopRequireDefault(_compose);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-/**
- * Creates a store enhancer that applies middleware to the dispatch method
- * of the Redux store. This is handy for a variety of tasks, such as expressing
- * asynchronous actions in a concise manner, or logging every action payload.
- *
- * See `redux-thunk` package as an example of the Redux middleware.
- *
- * Because middleware is potentially asynchronous, this should be the first
- * store enhancer in the composition chain.
- *
- * Note that each middleware will be given the `dispatch` and `getState` functions
- * as named arguments.
- *
- * @param {...Function} middlewares The middleware chain to be applied.
- * @returns {Function} A store enhancer applying the middleware.
- */
-function applyMiddleware() {
-  for (var _len = arguments.length, middlewares = Array(_len), _key = 0; _key < _len; _key++) {
-    middlewares[_key] = arguments[_key];
-  }
-
-  return function (createStore) {
-    return function (reducer, initialState, enhancer) {
-      var store = createStore(reducer, initialState, enhancer);
-      var _dispatch = store.dispatch;
-      var chain = [];
-
-      var middlewareAPI = {
-        getState: store.getState,
-        dispatch: function dispatch(action) {
-          return _dispatch(action);
-        }
-      };
-      chain = middlewares.map(function (middleware) {
-        return middleware(middlewareAPI);
-      });
-      _dispatch = _compose2["default"].apply(undefined, chain)(store.dispatch);
-
-      return _extends({}, store, {
-        dispatch: _dispatch
-      });
-    };
-  };
-}
-},{"./compose":233}],231:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports["default"] = bindActionCreators;
-function bindActionCreator(actionCreator, dispatch) {
-  return function () {
-    return dispatch(actionCreator.apply(undefined, arguments));
-  };
-}
-
-/**
- * Turns an object whose values are action creators, into an object with the
- * same keys, but with every function wrapped into a `dispatch` call so they
- * may be invoked directly. This is just a convenience method, as you can call
- * `store.dispatch(MyActionCreators.doSomething())` yourself just fine.
- *
- * For convenience, you can also pass a single function as the first argument,
- * and get a function in return.
- *
- * @param {Function|Object} actionCreators An object whose values are action
- * creator functions. One handy way to obtain it is to use ES6 `import * as`
- * syntax. You may also pass a single function.
- *
- * @param {Function} dispatch The `dispatch` function available on your Redux
- * store.
- *
- * @returns {Function|Object} The object mimicking the original object, but with
- * every action creator wrapped into the `dispatch` call. If you passed a
- * function as `actionCreators`, the return value will also be a single
- * function.
- */
-function bindActionCreators(actionCreators, dispatch) {
-  if (typeof actionCreators === 'function') {
-    return bindActionCreator(actionCreators, dispatch);
-  }
-
-  if (typeof actionCreators !== 'object' || actionCreators === null) {
-    throw new Error('bindActionCreators expected an object or a function, instead received ' + (actionCreators === null ? 'null' : typeof actionCreators) + '. ' + 'Did you write "import ActionCreators from" instead of "import * as ActionCreators from"?');
-  }
-
-  var keys = Object.keys(actionCreators);
-  var boundActionCreators = {};
-  for (var i = 0; i < keys.length; i++) {
-    var key = keys[i];
-    var actionCreator = actionCreators[key];
-    if (typeof actionCreator === 'function') {
-      boundActionCreators[key] = bindActionCreator(actionCreator, dispatch);
-    }
-  }
-  return boundActionCreators;
-}
-},{}],232:[function(require,module,exports){
-(function (process){
-'use strict';
-
-exports.__esModule = true;
-exports["default"] = combineReducers;
-
-var _createStore = require('./createStore');
-
-var _isPlainObject = require('lodash/isPlainObject');
-
-var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
-
-var _warning = require('./utils/warning');
-
-var _warning2 = _interopRequireDefault(_warning);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-function getUndefinedStateErrorMessage(key, action) {
-  var actionType = action && action.type;
-  var actionName = actionType && '"' + actionType.toString() + '"' || 'an action';
-
-  return 'Reducer "' + key + '" returned undefined handling ' + actionName + '. ' + 'To ignore an action, you must explicitly return the previous state.';
-}
-
-function getUnexpectedStateShapeWarningMessage(inputState, reducers, action) {
-  var reducerKeys = Object.keys(reducers);
-  var argumentName = action && action.type === _createStore.ActionTypes.INIT ? 'initialState argument passed to createStore' : 'previous state received by the reducer';
-
-  if (reducerKeys.length === 0) {
-    return 'Store does not have a valid reducer. Make sure the argument passed ' + 'to combineReducers is an object whose values are reducers.';
-  }
-
-  if (!(0, _isPlainObject2["default"])(inputState)) {
-    return 'The ' + argumentName + ' has unexpected type of "' + {}.toString.call(inputState).match(/\s([a-z|A-Z]+)/)[1] + '". Expected argument to be an object with the following ' + ('keys: "' + reducerKeys.join('", "') + '"');
-  }
-
-  var unexpectedKeys = Object.keys(inputState).filter(function (key) {
-    return !reducers.hasOwnProperty(key);
-  });
-
-  if (unexpectedKeys.length > 0) {
-    return 'Unexpected ' + (unexpectedKeys.length > 1 ? 'keys' : 'key') + ' ' + ('"' + unexpectedKeys.join('", "') + '" found in ' + argumentName + '. ') + 'Expected to find one of the known reducer keys instead: ' + ('"' + reducerKeys.join('", "') + '". Unexpected keys will be ignored.');
-  }
-}
-
-function assertReducerSanity(reducers) {
-  Object.keys(reducers).forEach(function (key) {
-    var reducer = reducers[key];
-    var initialState = reducer(undefined, { type: _createStore.ActionTypes.INIT });
-
-    if (typeof initialState === 'undefined') {
-      throw new Error('Reducer "' + key + '" returned undefined during initialization. ' + 'If the state passed to the reducer is undefined, you must ' + 'explicitly return the initial state. The initial state may ' + 'not be undefined.');
-    }
-
-    var type = '@@redux/PROBE_UNKNOWN_ACTION_' + Math.random().toString(36).substring(7).split('').join('.');
-    if (typeof reducer(undefined, { type: type }) === 'undefined') {
-      throw new Error('Reducer "' + key + '" returned undefined when probed with a random type. ' + ('Don\'t try to handle ' + _createStore.ActionTypes.INIT + ' or other actions in "redux/*" ') + 'namespace. They are considered private. Instead, you must return the ' + 'current state for any unknown actions, unless it is undefined, ' + 'in which case you must return the initial state, regardless of the ' + 'action type. The initial state may not be undefined.');
-    }
-  });
-}
-
-/**
- * Turns an object whose values are different reducer functions, into a single
- * reducer function. It will call every child reducer, and gather their results
- * into a single state object, whose keys correspond to the keys of the passed
- * reducer functions.
- *
- * @param {Object} reducers An object whose values correspond to different
- * reducer functions that need to be combined into one. One handy way to obtain
- * it is to use ES6 `import * as reducers` syntax. The reducers may never return
- * undefined for any action. Instead, they should return their initial state
- * if the state passed to them was undefined, and the current state for any
- * unrecognized action.
- *
- * @returns {Function} A reducer function that invokes every reducer inside the
- * passed object, and builds a state object with the same shape.
- */
-function combineReducers(reducers) {
-  var reducerKeys = Object.keys(reducers);
-  var finalReducers = {};
-  for (var i = 0; i < reducerKeys.length; i++) {
-    var key = reducerKeys[i];
-    if (typeof reducers[key] === 'function') {
-      finalReducers[key] = reducers[key];
-    }
-  }
-  var finalReducerKeys = Object.keys(finalReducers);
-
-  var sanityError;
-  try {
-    assertReducerSanity(finalReducers);
-  } catch (e) {
-    sanityError = e;
-  }
-
-  return function combination() {
-    var state = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-    var action = arguments[1];
-
-    if (sanityError) {
-      throw sanityError;
-    }
-
-    if (process.env.NODE_ENV !== 'production') {
-      var warningMessage = getUnexpectedStateShapeWarningMessage(state, finalReducers, action);
-      if (warningMessage) {
-        (0, _warning2["default"])(warningMessage);
-      }
-    }
-
-    var hasChanged = false;
-    var nextState = {};
-    for (var i = 0; i < finalReducerKeys.length; i++) {
-      var key = finalReducerKeys[i];
-      var reducer = finalReducers[key];
-      var previousStateForKey = state[key];
-      var nextStateForKey = reducer(previousStateForKey, action);
-      if (typeof nextStateForKey === 'undefined') {
-        var errorMessage = getUndefinedStateErrorMessage(key, action);
-        throw new Error(errorMessage);
-      }
-      nextState[key] = nextStateForKey;
-      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
-    }
-    return hasChanged ? nextState : state;
-  };
-}
-}).call(this,require('_process'))
-},{"./createStore":234,"./utils/warning":236,"_process":12,"lodash/isPlainObject":239}],233:[function(require,module,exports){
-"use strict";
-
-exports.__esModule = true;
-exports["default"] = compose;
-/**
- * Composes single-argument functions from right to left.
- *
- * @param {...Function} funcs The functions to compose.
- * @returns {Function} A function obtained by composing functions from right to
- * left. For example, compose(f, g, h) is identical to arg => f(g(h(arg))).
- */
-function compose() {
-  for (var _len = arguments.length, funcs = Array(_len), _key = 0; _key < _len; _key++) {
-    funcs[_key] = arguments[_key];
-  }
-
-  return function () {
-    if (funcs.length === 0) {
-      return arguments.length <= 0 ? undefined : arguments[0];
-    }
-
-    var last = funcs[funcs.length - 1];
-    var rest = funcs.slice(0, -1);
-
-    return rest.reduceRight(function (composed, f) {
-      return f(composed);
-    }, last.apply(undefined, arguments));
-  };
-}
-},{}],234:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports.ActionTypes = undefined;
-exports["default"] = createStore;
-
-var _isPlainObject = require('lodash/isPlainObject');
-
-var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-/**
- * These are private action types reserved by Redux.
- * For any unknown actions, you must return the current state.
- * If the current state is undefined, you must return the initial state.
- * Do not reference these action types directly in your code.
- */
-var ActionTypes = exports.ActionTypes = {
-  INIT: '@@redux/INIT'
-};
-
-/**
- * Creates a Redux store that holds the state tree.
- * The only way to change the data in the store is to call `dispatch()` on it.
- *
- * There should only be a single store in your app. To specify how different
- * parts of the state tree respond to actions, you may combine several reducers
- * into a single reducer function by using `combineReducers`.
- *
- * @param {Function} reducer A function that returns the next state tree, given
- * the current state tree and the action to handle.
- *
- * @param {any} [initialState] The initial state. You may optionally specify it
- * to hydrate the state from the server in universal apps, or to restore a
- * previously serialized user session.
- * If you use `combineReducers` to produce the root reducer function, this must be
- * an object with the same shape as `combineReducers` keys.
- *
- * @param {Function} enhancer The store enhancer. You may optionally specify it
- * to enhance the store with third-party capabilities such as middleware,
- * time travel, persistence, etc. The only store enhancer that ships with Redux
- * is `applyMiddleware()`.
- *
- * @returns {Store} A Redux store that lets you read the state, dispatch actions
- * and subscribe to changes.
- */
-function createStore(reducer, initialState, enhancer) {
-  if (typeof initialState === 'function' && typeof enhancer === 'undefined') {
-    enhancer = initialState;
-    initialState = undefined;
-  }
-
-  if (typeof enhancer !== 'undefined') {
-    if (typeof enhancer !== 'function') {
-      throw new Error('Expected the enhancer to be a function.');
-    }
-
-    return enhancer(createStore)(reducer, initialState);
-  }
-
-  if (typeof reducer !== 'function') {
-    throw new Error('Expected the reducer to be a function.');
-  }
-
-  var currentReducer = reducer;
-  var currentState = initialState;
-  var currentListeners = [];
-  var nextListeners = currentListeners;
-  var isDispatching = false;
-
-  function ensureCanMutateNextListeners() {
-    if (nextListeners === currentListeners) {
-      nextListeners = currentListeners.slice();
-    }
-  }
-
-  /**
-   * Reads the state tree managed by the store.
-   *
-   * @returns {any} The current state tree of your application.
-   */
-  function getState() {
-    return currentState;
-  }
-
-  /**
-   * Adds a change listener. It will be called any time an action is dispatched,
-   * and some part of the state tree may potentially have changed. You may then
-   * call `getState()` to read the current state tree inside the callback.
-   *
-   * You may call `dispatch()` from a change listener, with the following
-   * caveats:
-   *
-   * 1. The subscriptions are snapshotted just before every `dispatch()` call.
-   * If you subscribe or unsubscribe while the listeners are being invoked, this
-   * will not have any effect on the `dispatch()` that is currently in progress.
-   * However, the next `dispatch()` call, whether nested or not, will use a more
-   * recent snapshot of the subscription list.
-   *
-   * 2. The listener should not expect to see all states changes, as the state
-   * might have been updated multiple times during a nested `dispatch()` before
-   * the listener is called. It is, however, guaranteed that all subscribers
-   * registered before the `dispatch()` started will be called with the latest
-   * state by the time it exits.
-   *
-   * @param {Function} listener A callback to be invoked on every dispatch.
-   * @returns {Function} A function to remove this change listener.
-   */
-  function subscribe(listener) {
-    if (typeof listener !== 'function') {
-      throw new Error('Expected listener to be a function.');
-    }
-
-    var isSubscribed = true;
-
-    ensureCanMutateNextListeners();
-    nextListeners.push(listener);
-
-    return function unsubscribe() {
-      if (!isSubscribed) {
-        return;
-      }
-
-      isSubscribed = false;
-
-      ensureCanMutateNextListeners();
-      var index = nextListeners.indexOf(listener);
-      nextListeners.splice(index, 1);
-    };
-  }
-
-  /**
-   * Dispatches an action. It is the only way to trigger a state change.
-   *
-   * The `reducer` function, used to create the store, will be called with the
-   * current state tree and the given `action`. Its return value will
-   * be considered the **next** state of the tree, and the change listeners
-   * will be notified.
-   *
-   * The base implementation only supports plain object actions. If you want to
-   * dispatch a Promise, an Observable, a thunk, or something else, you need to
-   * wrap your store creating function into the corresponding middleware. For
-   * example, see the documentation for the `redux-thunk` package. Even the
-   * middleware will eventually dispatch plain object actions using this method.
-   *
-   * @param {Object} action A plain object representing “what changed”. It is
-   * a good idea to keep actions serializable so you can record and replay user
-   * sessions, or use the time travelling `redux-devtools`. An action must have
-   * a `type` property which may not be `undefined`. It is a good idea to use
-   * string constants for action types.
-   *
-   * @returns {Object} For convenience, the same action object you dispatched.
-   *
-   * Note that, if you use a custom middleware, it may wrap `dispatch()` to
-   * return something else (for example, a Promise you can await).
-   */
-  function dispatch(action) {
-    if (!(0, _isPlainObject2["default"])(action)) {
-      throw new Error('Actions must be plain objects. ' + 'Use custom middleware for async actions.');
-    }
-
-    if (typeof action.type === 'undefined') {
-      throw new Error('Actions may not have an undefined "type" property. ' + 'Have you misspelled a constant?');
-    }
-
-    if (isDispatching) {
-      throw new Error('Reducers may not dispatch actions.');
-    }
-
-    try {
-      isDispatching = true;
-      currentState = currentReducer(currentState, action);
-    } finally {
-      isDispatching = false;
-    }
-
-    var listeners = currentListeners = nextListeners;
-    for (var i = 0; i < listeners.length; i++) {
-      listeners[i]();
-    }
-
-    return action;
-  }
-
-  /**
-   * Replaces the reducer currently used by the store to calculate the state.
-   *
-   * You might need this if your app implements code splitting and you want to
-   * load some of the reducers dynamically. You might also need this if you
-   * implement a hot reloading mechanism for Redux.
-   *
-   * @param {Function} nextReducer The reducer for the store to use instead.
-   * @returns {void}
-   */
-  function replaceReducer(nextReducer) {
-    if (typeof nextReducer !== 'function') {
-      throw new Error('Expected the nextReducer to be a function.');
-    }
-
-    currentReducer = nextReducer;
-    dispatch({ type: ActionTypes.INIT });
-  }
-
-  // When a store is created, an "INIT" action is dispatched so that every
-  // reducer returns their initial state. This effectively populates
-  // the initial state tree.
-  dispatch({ type: ActionTypes.INIT });
-
-  return {
-    dispatch: dispatch,
-    subscribe: subscribe,
-    getState: getState,
-    replaceReducer: replaceReducer
-  };
-}
-},{"lodash/isPlainObject":239}],235:[function(require,module,exports){
-(function (process){
-'use strict';
-
-exports.__esModule = true;
-exports.compose = exports.applyMiddleware = exports.bindActionCreators = exports.combineReducers = exports.createStore = undefined;
-
-var _createStore = require('./createStore');
-
-var _createStore2 = _interopRequireDefault(_createStore);
-
-var _combineReducers = require('./combineReducers');
-
-var _combineReducers2 = _interopRequireDefault(_combineReducers);
-
-var _bindActionCreators = require('./bindActionCreators');
-
-var _bindActionCreators2 = _interopRequireDefault(_bindActionCreators);
-
-var _applyMiddleware = require('./applyMiddleware');
-
-var _applyMiddleware2 = _interopRequireDefault(_applyMiddleware);
-
-var _compose = require('./compose');
-
-var _compose2 = _interopRequireDefault(_compose);
-
-var _warning = require('./utils/warning');
-
-var _warning2 = _interopRequireDefault(_warning);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-/*
-* This is a dummy function to check if the function name has been altered by minification.
-* If the function has been minified and NODE_ENV !== 'production', warn the user.
-*/
-function isCrushed() {}
-
-if (process.env.NODE_ENV !== 'production' && typeof isCrushed.name === 'string' && isCrushed.name !== 'isCrushed') {
-  (0, _warning2["default"])('You are currently using minified code outside of NODE_ENV === \'production\'. ' + 'This means that you are running a slower development build of Redux. ' + 'You can use loose-envify (https://github.com/zertosh/loose-envify) for browserify ' + 'or DefinePlugin for webpack (http://stackoverflow.com/questions/30030031) ' + 'to ensure you have the correct code for your production build.');
-}
-
-exports.createStore = _createStore2["default"];
-exports.combineReducers = _combineReducers2["default"];
-exports.bindActionCreators = _bindActionCreators2["default"];
-exports.applyMiddleware = _applyMiddleware2["default"];
-exports.compose = _compose2["default"];
-}).call(this,require('_process'))
-},{"./applyMiddleware":230,"./bindActionCreators":231,"./combineReducers":232,"./compose":233,"./createStore":234,"./utils/warning":236,"_process":12}],236:[function(require,module,exports){
-'use strict';
-
-exports.__esModule = true;
-exports["default"] = warning;
-/**
- * Prints a warning in the console if it exists.
- *
- * @param {String} message The warning message.
- * @returns {void}
- */
-function warning(message) {
-  /* eslint-disable no-console */
-  if (typeof console !== 'undefined' && typeof console.error === 'function') {
-    console.error(message);
-  }
-  /* eslint-enable no-console */
-  try {
-    // This error was thrown as a convenience so that you can use this stack
-    // to find the callsite that caused this warning to fire.
-    throw new Error(message);
-    /* eslint-disable no-empty */
-  } catch (e) {}
-  /* eslint-enable no-empty */
-}
-},{}],237:[function(require,module,exports){
-/**
- * Checks if `value` is a host object in IE < 9.
- *
- * @private
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a host object, else `false`.
- */
-function isHostObject(value) {
-  // Many host objects are `Object` objects that can coerce to strings
-  // despite having improperly defined `toString` methods.
-  var result = false;
-  if (value != null && typeof value.toString != 'function') {
-    try {
-      result = !!(value + '');
-    } catch (e) {}
-  }
-  return result;
-}
-
-module.exports = isHostObject;
-
-},{}],238:[function(require,module,exports){
-/**
- * Checks if `value` is object-like. A value is object-like if it's not `null`
- * and has a `typeof` result of "object".
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
- * @example
- *
- * _.isObjectLike({});
- * // => true
- *
- * _.isObjectLike([1, 2, 3]);
- * // => true
- *
- * _.isObjectLike(_.noop);
- * // => false
- *
- * _.isObjectLike(null);
- * // => false
- */
-function isObjectLike(value) {
-  return !!value && typeof value == 'object';
-}
-
-module.exports = isObjectLike;
-
-},{}],239:[function(require,module,exports){
-var isHostObject = require('./_isHostObject'),
-    isObjectLike = require('./isObjectLike');
-
-/** `Object#toString` result references. */
-var objectTag = '[object Object]';
-
-/** Used for built-in method references. */
-var objectProto = Object.prototype;
-
-/** Used to resolve the decompiled source of functions. */
-var funcToString = Function.prototype.toString;
-
-/** Used to infer the `Object` constructor. */
-var objectCtorString = funcToString.call(Object);
-
-/**
- * Used to resolve the [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
- * of values.
- */
-var objectToString = objectProto.toString;
-
-/** Built-in value references. */
-var getPrototypeOf = Object.getPrototypeOf;
-
-/**
- * Checks if `value` is a plain object, that is, an object created by the
- * `Object` constructor or one with a `[[Prototype]]` of `null`.
- *
- * @static
- * @memberOf _
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
- * @example
- *
- * function Foo() {
- *   this.a = 1;
- * }
- *
- * _.isPlainObject(new Foo);
- * // => false
- *
- * _.isPlainObject([1, 2, 3]);
- * // => false
- *
- * _.isPlainObject({ 'x': 0, 'y': 0 });
- * // => true
- *
- * _.isPlainObject(Object.create(null));
- * // => true
- */
-function isPlainObject(value) {
-  if (!isObjectLike(value) ||
-      objectToString.call(value) != objectTag || isHostObject(value)) {
-    return false;
-  }
-  var proto = objectProto;
-  if (typeof value.constructor == 'function') {
-    proto = getPrototypeOf(value);
-  }
-  if (proto === null) {
-    return true;
-  }
-  var Ctor = proto.constructor;
-  return (typeof Ctor == 'function' &&
-    Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString);
-}
-
-module.exports = isPlainObject;
-
-},{"./_isHostObject":237,"./isObjectLike":238}],240:[function(require,module,exports){
 /*
  * Copyright 2012-2013 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -26006,7 +25481,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"./util/mixin":259}],241:[function(require,module,exports){
+},{"./util/mixin":249}],231:[function(require,module,exports){
 /*
  * Copyright 2014 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -26033,7 +25508,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"./client/default":243,"./client/xhr":244}],242:[function(require,module,exports){
+},{"./client/default":233,"./client/xhr":234}],232:[function(require,module,exports){
 /*
  * Copyright 2014 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -26099,7 +25574,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{}],243:[function(require,module,exports){
+},{}],233:[function(require,module,exports){
 /*
  * Copyright 2014 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -26225,7 +25700,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"../client":242}],244:[function(require,module,exports){
+},{"../client":232}],234:[function(require,module,exports){
 /*
  * Copyright 2012-2014 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -26401,7 +25876,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"../UrlBuilder":240,"../client":242,"../util/normalizeHeaderName":260,"../util/responsePromise":261,"when":281}],245:[function(require,module,exports){
+},{"../UrlBuilder":230,"../client":232,"../util/normalizeHeaderName":250,"../util/responsePromise":251,"when":271}],235:[function(require,module,exports){
 /*
  * Copyright 2012-2015 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -26568,7 +26043,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"./client":242,"./client/default":243,"./util/mixin":259,"./util/responsePromise":261,"when":281}],246:[function(require,module,exports){
+},{"./client":232,"./client/default":233,"./util/mixin":249,"./util/responsePromise":251,"when":271}],236:[function(require,module,exports){
 /*
  * Copyright 2012-2013 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -26617,7 +26092,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"../interceptor":245,"when":281}],247:[function(require,module,exports){
+},{"../interceptor":235,"when":271}],237:[function(require,module,exports){
 /*
  * Copyright 2012-2014 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -26729,7 +26204,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"../interceptor":245,"../mime":250,"../mime/registry":251,"when":281}],248:[function(require,module,exports){
+},{"../interceptor":235,"../mime":240,"../mime/registry":241,"when":271}],238:[function(require,module,exports){
 /*
  * Copyright 2012-2013 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -26790,7 +26265,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"../UrlBuilder":240,"../interceptor":245}],249:[function(require,module,exports){
+},{"../UrlBuilder":230,"../interceptor":235}],239:[function(require,module,exports){
 /*
  * Copyright 2015 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -26846,7 +26321,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"../interceptor":245,"../util/mixin":259,"../util/uriTemplate":263}],250:[function(require,module,exports){
+},{"../interceptor":235,"../util/mixin":249,"../util/uriTemplate":253}],240:[function(require,module,exports){
 /*
 * Copyright 2014 the original author or authors
 * @license MIT, see LICENSE.txt for details
@@ -26901,7 +26376,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{}],251:[function(require,module,exports){
+},{}],241:[function(require,module,exports){
 /*
  * Copyright 2012-2014 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -27018,7 +26493,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"../mime":250,"./type/application/hal":252,"./type/application/json":253,"./type/application/x-www-form-urlencoded":254,"./type/multipart/form-data":255,"./type/text/plain":256,"when":281}],252:[function(require,module,exports){
+},{"../mime":240,"./type/application/hal":242,"./type/application/json":243,"./type/application/x-www-form-urlencoded":244,"./type/multipart/form-data":245,"./type/text/plain":246,"when":271}],242:[function(require,module,exports){
 /*
  * Copyright 2013-2015 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -27159,7 +26634,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"../../../interceptor/pathPrefix":248,"../../../interceptor/template":249,"../../../util/find":257,"../../../util/lazyPromise":258,"../../../util/responsePromise":261,"when":281}],253:[function(require,module,exports){
+},{"../../../interceptor/pathPrefix":238,"../../../interceptor/template":239,"../../../util/find":247,"../../../util/lazyPromise":248,"../../../util/responsePromise":251,"when":271}],243:[function(require,module,exports){
 /*
  * Copyright 2012-2015 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -27208,7 +26683,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{}],254:[function(require,module,exports){
+},{}],244:[function(require,module,exports){
 /*
  * Copyright 2012 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -27300,7 +26775,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{}],255:[function(require,module,exports){
+},{}],245:[function(require,module,exports){
 /*
  * Copyright 2014 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -27375,7 +26850,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{}],256:[function(require,module,exports){
+},{}],246:[function(require,module,exports){
 /*
  * Copyright 2012 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -27406,7 +26881,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{}],257:[function(require,module,exports){
+},{}],247:[function(require,module,exports){
 /*
  * Copyright 2013 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -27449,7 +26924,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{}],258:[function(require,module,exports){
+},{}],248:[function(require,module,exports){
 /*
  * Copyright 2013 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -27506,7 +26981,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"when":281}],259:[function(require,module,exports){
+},{"when":271}],249:[function(require,module,exports){
 /*
  * Copyright 2012-2013 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -27556,7 +27031,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{}],260:[function(require,module,exports){
+},{}],250:[function(require,module,exports){
 /*
  * Copyright 2012 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -27596,7 +27071,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{}],261:[function(require,module,exports){
+},{}],251:[function(require,module,exports){
 /*
  * Copyright 2014-2015 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -27738,7 +27213,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"./normalizeHeaderName":260,"when":281}],262:[function(require,module,exports){
+},{"./normalizeHeaderName":250,"when":271}],252:[function(require,module,exports){
 /*
  * Copyright 2015 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -27919,7 +27394,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{}],263:[function(require,module,exports){
+},{}],253:[function(require,module,exports){
 /*
  * Copyright 2015 the original author or authors
  * @license MIT, see LICENSE.txt for details
@@ -28092,7 +27567,7 @@ module.exports = isPlainObject;
 	// Boilerplate for AMD and Node
 ));
 
-},{"./uriEncoder":262}],264:[function(require,module,exports){
+},{"./uriEncoder":252}],254:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -28111,7 +27586,7 @@ define(function (require) {
 });
 })(typeof define === 'function' && define.amd ? define : function (factory) { module.exports = factory(require); });
 
-},{"./Scheduler":265,"./env":277,"./makePromise":279}],265:[function(require,module,exports){
+},{"./Scheduler":255,"./env":267,"./makePromise":269}],255:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -28193,7 +27668,7 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],266:[function(require,module,exports){
+},{}],256:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -28221,7 +27696,7 @@ define(function() {
 	return TimeoutError;
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
-},{}],267:[function(require,module,exports){
+},{}],257:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -28278,7 +27753,7 @@ define(function() {
 
 
 
-},{}],268:[function(require,module,exports){
+},{}],258:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -28569,7 +28044,7 @@ define(function(require) {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(require); }));
 
-},{"../apply":267,"../state":280}],269:[function(require,module,exports){
+},{"../apply":257,"../state":270}],259:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -28731,7 +28206,7 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],270:[function(require,module,exports){
+},{}],260:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -28760,7 +28235,7 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],271:[function(require,module,exports){
+},{}],261:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -28782,7 +28257,7 @@ define(function(require) {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(require); }));
 
-},{"../state":280}],272:[function(require,module,exports){
+},{"../state":270}],262:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -28849,7 +28324,7 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],273:[function(require,module,exports){
+},{}],263:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -28875,7 +28350,7 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],274:[function(require,module,exports){
+},{}],264:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -28955,7 +28430,7 @@ define(function(require) {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(require); }));
 
-},{"../TimeoutError":266,"../env":277}],275:[function(require,module,exports){
+},{"../TimeoutError":256,"../env":267}],265:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -29043,7 +28518,7 @@ define(function(require) {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(require); }));
 
-},{"../env":277,"../format":278}],276:[function(require,module,exports){
+},{"../env":267,"../format":268}],266:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -29083,7 +28558,7 @@ define(function() {
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
 
-},{}],277:[function(require,module,exports){
+},{}],267:[function(require,module,exports){
 (function (process){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
@@ -29160,7 +28635,7 @@ define(function(require) {
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(require); }));
 
 }).call(this,require('_process'))
-},{"_process":12}],278:[function(require,module,exports){
+},{"_process":12}],268:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -29218,7 +28693,7 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],279:[function(require,module,exports){
+},{}],269:[function(require,module,exports){
 (function (process){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
@@ -30149,7 +29624,7 @@ define(function() {
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
 }).call(this,require('_process'))
-},{"_process":12}],280:[function(require,module,exports){
+},{"_process":12}],270:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 /** @author Brian Cavalier */
 /** @author John Hann */
@@ -30186,7 +29661,7 @@ define(function() {
 });
 }(typeof define === 'function' && define.amd ? define : function(factory) { module.exports = factory(); }));
 
-},{}],281:[function(require,module,exports){
+},{}],271:[function(require,module,exports){
 /** @license MIT License (c) copyright 2010-2014 original author or authors */
 
 /**
@@ -30416,7 +29891,7 @@ define(function (require) {
 });
 })(typeof define === 'function' && define.amd ? define : function (factory) { module.exports = factory(require); });
 
-},{"./lib/Promise":264,"./lib/TimeoutError":266,"./lib/apply":267,"./lib/decorators/array":268,"./lib/decorators/flow":269,"./lib/decorators/fold":270,"./lib/decorators/inspect":271,"./lib/decorators/iterate":272,"./lib/decorators/progress":273,"./lib/decorators/timed":274,"./lib/decorators/unhandledRejection":275,"./lib/decorators/with":276}],282:[function(require,module,exports){
+},{"./lib/Promise":254,"./lib/TimeoutError":256,"./lib/apply":257,"./lib/decorators/array":258,"./lib/decorators/flow":259,"./lib/decorators/fold":260,"./lib/decorators/inspect":261,"./lib/decorators/iterate":262,"./lib/decorators/progress":263,"./lib/decorators/timed":264,"./lib/decorators/unhandledRejection":265,"./lib/decorators/with":266}],272:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -30425,6 +29900,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.add = add;
 exports.register = register;
 exports.login = login;
+exports.auth_login = auth_login;
 
 var _rest = require('rest');
 
@@ -30466,4 +29942,14 @@ function login(data) {
 	});
 }
 
-},{"rest":241,"rest/interceptor/errorCode":246,"rest/interceptor/mime":247}]},{},[4]);
+function auth_login(access_token) {
+	return (0, _rest2.default)('https://www.googleapis.com/oauth2/v1/tokeninfo?' + access_token).then(function (data) {
+		return client({
+			path: host + "auth_login",
+			method: "POST",
+			entity: JSON.parse(data.entity)
+		});
+	});
+}
+
+},{"rest":231,"rest/interceptor/errorCode":236,"rest/interceptor/mime":237}]},{},[5]);

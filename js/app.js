@@ -3,25 +3,43 @@ import rest from 'rest';
 import Tasks from "./tasks";
 import SignUp from "./signup";
 import { Link } from 'react-router';
+import {auth_login} from "../sdk/sdk";
 
 
 class App extends React.Component {
-  routeHandler() {
-		console.log("props------",this.context.router.transitionTo)
-		this.props.history.replaceState(null,"/signup");
+	constructor(){
+		super();
+		this.state = {
+			user         : undefined
+		}
+	}
+  componentDidUpdate(prevProps, prevState){
+  	if(this.state.user && prevState.user!==this.state.user){
+  		console.log("replace")
+			this.props.history.replace({ pathname: "/dashboard", query: {user:JSON.stringify(this.state.user)}});
+  	}
   }
 	componentWillMount(){
-		this.routeHandler();
-		//this.transitionTo('/signup')
+		var self = this;
+		var access_token = window.location.href.split("&")[1]
+		if(!this.state.user){
+			this.props.history.replace("/signup");
+		}
+		if(access_token){
+			auth_login(access_token)
+			.then(function(data){
+				if(data.entity){
+					self.setState({
+						user: data.entity
+					})
+				}
+			})
+		}
 	}
-	see(){
-		//this.props.history.transitionTo("/signup")
-	}
+	
 	render() {
 		return (
 			<div className="container">
-				<input type="button" value="signup" onClick={this.see.bind(this)}></input>
-				<Link to={"/signup"}>Go to signup</Link>
 				{this.props.children}
 			</div>
 		)

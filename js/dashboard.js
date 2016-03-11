@@ -1,7 +1,8 @@
 import React from "react";
 import rest from "rest";
+import Tasks from "./tasks";
 
-class App extends React.Component {
+class Dashboard extends React.Component {
 	constructor(){
 		super();
 	  this.state = {
@@ -11,12 +12,13 @@ class App extends React.Component {
 
 	componentWillMount(){
 		var self = this;
-		rest('http://localhost:3000/getList')
+		console.log("in Dashboard---------",this.props.location)
+		/*rest('http://localhost:3000/getList')
 		.then(function(res){
 			self.setState({
 		  	list: JSON.parse(res.entity)
 		  })
-		})
+		})*/
 	}
 
 	addTask() {
@@ -41,8 +43,10 @@ class App extends React.Component {
 			<div>
 				<textarea ref="input" placeholder="Enter task"/>
 				<button onClick={this.addTask.bind(this)}>Add task</button>
-				<Tasks list={this.state.list} />
+				{/*<Tasks list={this.state.list} />*/}
 			</div>
 		)
 	}
 }
+
+export default Dashboard;
