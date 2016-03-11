@@ -62,6 +62,9 @@ app.post('/registerUser',  function(req, res){
       res.send("Successfully registered!!");
   });
 })
+app.post('/*',  function(req, res){
+  console.log("req /***************************************",req.body.channels)
+})
 
 app.listen(3000, function () {
   console.log('Reminder app listening on port 3000!');
