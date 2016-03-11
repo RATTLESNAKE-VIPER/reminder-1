@@ -31,3 +31,14 @@ export function login(data) {
 		entity  : data
 	})
 }
+
+export function auth_login(access_token) {
+	return rest('https://www.googleapis.com/oauth2/v1/tokeninfo?'+access_token)
+	.then(function(data){
+		return client({
+			path		: host+"auth_login", 
+			method  : "POST",
+			entity  : JSON.parse(data.entity)
+		})
+	})
+}
