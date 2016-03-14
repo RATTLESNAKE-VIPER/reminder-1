@@ -1491,56 +1491,24 @@ exports['default'] = {
 "use strict";
 
 exports.__esModule = true;
-var _slice = Array.prototype.slice;
 exports.loopAsync = loopAsync;
 
 function loopAsync(turns, work, callback) {
-  var currentTurn = 0,
-      isDone = false;
-  var sync = false,
-      hasNext = false,
-      doneArgs = undefined;
+  var currentTurn = 0;
+  var isDone = false;
 
   function done() {
     isDone = true;
-    if (sync) {
-      // Iterate instead of recursing if possible.
-      doneArgs = [].concat(_slice.call(arguments));
-      return;
-    }
-
     callback.apply(this, arguments);
   }
 
   function next() {
-    if (isDone) {
-      return;
-    }
+    if (isDone) return;
 
-    hasNext = true;
-    if (sync) {
-      // Iterate instead of recursing if possible.
-      return;
-    }
-
-    sync = true;
-
-    while (!isDone && currentTurn < turns && hasNext) {
-      hasNext = false;
+    if (currentTurn < turns) {
       work.call(this, currentTurn++, next, done);
-    }
-
-    sync = false;
-
-    if (isDone) {
-      // This means the loop finished synchronously.
-      callback.apply(this, doneArgs);
-      return;
-    }
-
-    if (currentTurn >= turns && hasNext) {
-      isDone = true;
-      callback();
+    } else {
+      done.apply(this, arguments);
     }
   }
 
@@ -2279,8 +2247,8 @@ function createHistory() {
   var finishTransition = options.finishTransition;
   var saveState = options.saveState;
   var go = options.go;
-  var getUserConfirmation = options.getUserConfirmation;
   var keyLength = options.keyLength;
+  var getUserConfirmation = options.getUserConfirmation;
 
   if (typeof keyLength !== 'number') keyLength = DefaultKeyLength;
 
@@ -2659,20 +2627,19 @@ function createMemoryHistory() {
 
   function getCurrentLocation() {
     var entry = entries[current];
+    var key = entry.key;
     var basename = entry.basename;
     var pathname = entry.pathname;
     var search = entry.search;
 
     var path = (basename || '') + pathname + (search || '');
 
-    var key = undefined,
-        state = undefined;
-    if (entry.key) {
-      key = entry.key;
+    var state = undefined;
+    if (key) {
       state = readState(key);
     } else {
-      key = history.createKey();
       state = null;
+      key = history.createKey();
       entry.key = key;
     }
 
@@ -2785,6 +2752,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 var _ExecutionEnvironment = require('./ExecutionEnvironment');
 
 var _PathUtils = require('./PathUtils');
@@ -2800,10 +2769,11 @@ var _deprecate2 = _interopRequireDefault(_deprecate);
 function useBasename(createHistory) {
   return function () {
     var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    var history = createHistory(options);
-
     var basename = options.basename;
+
+    var historyOptions = _objectWithoutProperties(options, ['basename']);
+
+    var history = createHistory(historyOptions);
 
     // Automatically use the value of <base href> in HTML
     // documents as basename if it's not explicitly given.
@@ -2922,6 +2892,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
 var _warning = require('warning');
 
 var _warning2 = _interopRequireDefault(_warning);
@@ -2959,11 +2931,12 @@ function isNestedObject(object) {
 function useQueries(createHistory) {
   return function () {
     var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-    var history = createHistory(options);
-
     var stringifyQuery = options.stringifyQuery;
     var parseQueryString = options.parseQueryString;
+
+    var historyOptions = _objectWithoutProperties(options, ['stringifyQuery', 'parseQueryString']);
+
+    var history = createHistory(historyOptions);
 
     if (typeof stringifyQuery !== 'function') stringifyQuery = defaultStringifyQuery;
 
@@ -3332,7 +3305,7 @@ exports.stringify = function (obj) {
 		}
 
 		if (Array.isArray(val)) {
-			return val.slice().sort().map(function (val2) {
+			return val.sort().map(function (val2) {
 				return strictUriEncode(key) + '=' + strictUriEncode(val2);
 			}).join('&');
 		}
@@ -29943,13 +29916,21 @@ function login(data) {
 }
 
 function auth_login(access_token) {
-	return (0, _rest2.default)('https://www.googleapis.com/oauth2/v1/tokeninfo?' + access_token).then(function (data) {
-		return client({
-			path: host + "auth_login",
-			method: "POST",
-			entity: JSON.parse(data.entity)
-		});
+	return client({
+		path: host + "auth_login",
+		method: "POST",
+		entity: {
+			access_token: access_token
+		}
 	});
+	/*return rest('https://www.googleapis.com/oauth2/v1/tokeninfo?'+access_token)
+ .then(function(data){
+ 	return client({
+ 		path		: host+"auth_login", 
+ 		method  : "POST",
+ 		entity  : JSON.parse(data.entity)
+ 	})
+ })*/
 }
 
 },{"rest":231,"rest/interceptor/errorCode":236,"rest/interceptor/mime":237}]},{},[5]);
