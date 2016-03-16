@@ -65,7 +65,7 @@ app.post('/registerUser',  function(req, res){
   });
 })
 
-/*app.post('/login',  function(req, res){
+app.post('/login',  function(req, res){
   User.findOne(req.body,function(err, data){
     if(!data){
       res.send("You need to register first!")
@@ -77,7 +77,7 @@ app.post('/registerUser',  function(req, res){
       })
     }
   })
-})*/
+})
 
 app.post('/auth_login', function(req, res){
   rest('https://www.googleapis.com/oauth2/v1/tokeninfo?'+req.body.access_token)

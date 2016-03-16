@@ -1,4 +1,4 @@
-
+var nodemailer = require('nodemailer');
 //gives string of specified length consisting given characters
 
 var randomString =  module.exports.randomString = function(length, chars) {
