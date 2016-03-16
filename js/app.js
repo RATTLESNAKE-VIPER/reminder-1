@@ -23,16 +23,12 @@ class App extends React.Component {
 		var self = this;
 		var access_token = window.location.href.split("&")[1]
 		if(!this.state.user){
-			this.props.history.replace("/signup");
+			//this.props.history.replace("/signin");
 		}
 		if(access_token){
 			auth_login(access_token)
 			.then(function(data){
-				if(data.entity){
-					self.setState({
-						user: data.entity
-					})
-				}
+				console.log("data------------",data)
 			})
 		}
 	}

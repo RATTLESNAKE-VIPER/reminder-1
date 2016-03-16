@@ -47,5 +47,5 @@ gulp.task('build', function() {
 })
 
 gulp.task('watch', function(){
-  gulp.watch(['./js/*.js','./less/*.less'],['less','browserify'])
+  gulp.watch(['./js/*.js','./sdk/*.js','./less/*.less'],['less','browserify'])
 })
