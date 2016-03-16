@@ -1,6 +1,34 @@
-.signup-wrapper {
-  width: 50%;
+html,
+body {
+  min-height: 100%;
+  height: 100%;
 }
-.signup-wrapper input {
-  margin: 10px;
+#app,
+.app-wrap {
+  height: 100%;
+}
+.signin-wrapper {
+  height: 100%;
+  margin: 0px;
+}
+.signin-wrapper .signin {
+  height: 100%;
+}
+.signin-wrapper .content {
+  height: 100%;
+  background: url('../images/notepad.jpg') left bottom no-repeat #F9FC73;
+  background-size: contain;
+  background-blend-mode: overlay;
+}
+.signup-wrapper {
+  height: 100%;
+}
+.signup-wrapper .signup {
+  height: 100%;
+}
+.signup-wrapper .content {
+  height: 100%;
+  background: url('../images/notepad.jpg') left bottom no-repeat #F9FC73;
+  background-size: contain;
+  background-blend-mode: overlay;
 }

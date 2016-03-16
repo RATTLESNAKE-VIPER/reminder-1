@@ -49,32 +49,88 @@ app.post('/add',  function(req, res){
   });
 })
 
-app.post('/registerUser',  function(req, res){
-  console.log("req",req.body)
-  var user = new User({
-    password : req.body.password,
-    username : req.body.username,
-    email    : req.body.email
-  });
-  user.save(function (err, data) {
-    console.log("saved---------",data)
-    if (err)
-      res.send(err);
-    else
-      res.send("Successfully registered!!");
-  });
+app.post('/registerUser',  function(req, res){ 
+  User.findOne({email: req.body.email}, function(err, data){
+    var password_salt = userHelper.generateSalt()
+    var cryptedPswd = userHelper.computeHash(req.body.password, password_salt)
+    var userObj = {
+      crypted_password : cryptedPswd,
+      password_salt : password_salt,
+      username      : req.body.username,
+      email         : req.body.email
+    }
+    var user = new User(userObj);
+    if(!data){
+      user.save(function (err, data) {
+        if(err)
+          res.send(err);
+        else{
+          userHelper.activateUser(req.body)
+          .then(function(data){
+            res.send(data)
+          })
+        }
+      });
+    } else{
+      if(!data.activated){
+        user = data;
+        user.update(userObj, function(err, updated){
+          if(err)
+            res.send(err);
+          else{
+            userHelper.activateUser(req.body)
+            .then(function(data){
+              res.send(data)
+            })
+          }
+        })
+      }else{
+        res.send("Your account is already active!!!")
+      }
+    }
+  })
+})
+
+app.post('/activateUser', function(req, res) {
+  User.findOne({
+    email   : req.body.email,
+    username: req.body.username
+  }, function(err, user){
+    if(!user){
+      res.send("Your registration information seems wrong. Please register again!")
+    } else{
+      user.update({
+        activate: true
+      }, function(err, updated){
+        res.send("Your account has been activated. Please login in into keepatab and have fun.")
+      })
+    }
+  })
 })
 
 app.post('/login',  function(req, res){
-  User.findOne(req.body,function(err, data){
+  User.findOne({email: req.body.email},function(err, data){
     if(!data){
       res.send("You need to register first!")
     } else{
-      var user = data;
-      user.update({
-        authtoken: userHelper.generateAuthtoken()
-      }, {upsert: true}, function(err, data){
-      })
+      if(data.activated){
+        var isPswdCorrect = userHelper.compareHash(req.body.password, data.password_salt, data.crypted_password)
+        if(isPswdCorrect){
+          var user = data;
+          user.update({
+            authtoken: userHelper.generateAuthtoken()
+          }, function(err, updated){
+            User.findOne({_id:user._id},function(err, data){
+              console.log("data in old user-------",data, isPswdCorrect)
+              res.send(data)
+            })
+          })
+        }else{
+          res.send("Wrong password")
+        }
+      }else{
+        res.send("You need to register first!")
+      }
     }
   })
 })
@@ -84,12 +140,11 @@ app.post('/auth_login', function(req, res){
   .then(function(data){
     var gmailUser = JSON.parse(data.entity)
     User.findOne({email: gmailUser.email},function(err, data){
-      console.log("data in new user-------",data)
       if(!data){
         var user = new User({
-          authtoken: userHelper.generateAuthtoken(),
-          email    : gmailUser.email,
-          auth_data        : {
+          authtoken : userHelper.generateAuthtoken(),
+          email     : gmailUser.email,
+          auth_data : {
             google: {
               uid   : gmailUser.user_id,
               email : gmailUser.email

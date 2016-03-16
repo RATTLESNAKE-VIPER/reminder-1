@@ -6,8 +6,7 @@ var client    = rest.wrap(mime, {
 	mime          : 'application/json'
 })
 
-var host      = "http://localhost:3000/";
-
+var host      = "http://localhost:3000/"
 export function add(data) {
 	return client({
 		path		: host+"add", 
@@ -19,6 +18,14 @@ export function add(data) {
 export function register(data) {
 	return client({
 		path		: host+"registerUser", 
+		method  : "POST",
+		entity  : data
+	})
+}
+
+export function activateUser(data){
+	return client({
+		path		: host+"activateUser", 
 		method  : "POST",
 		entity  : data
 	})
