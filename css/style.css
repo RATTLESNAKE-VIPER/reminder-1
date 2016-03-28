@@ -3,22 +3,86 @@ body {
   min-height: 100%;
   height: 100%;
 }
+header {
+  display: none;
+}
 #app,
 .app-wrap {
   height: 100%;
 }
 .signin-wrapper {
+  overflow: hidden;
   height: 100%;
   margin: 0px;
 }
 .signin-wrapper .signin {
   height: 100%;
 }
+.signin-wrapper .signin .signin-form {
+  width: 75%;
+  margin-top: 50%;
+  margin-left: 41px;
+}
+.signin-wrapper .signin .signin-form .input {
+  margin: 10px;
+  outline: none!important;
+  border: 1px solid #D2CFCF;
+  lcolor: #73751C;
+  box-shadow: none!important;
+}
+.signin-wrapper .signin .signin-form .input:focus {
+  border-color: #F9FC53;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #f9fb4a;
+}
+.signin-wrapper .signin .signin-form .loginbtn {
+  background-color: #F9FC53;
+}
+.signin-wrapper .signin .signin-form .auth,
+.signin-wrapper .signin .signin-form .reg {
+  width: auto;
+  margin: 0px 4px 0px 4px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 12px;
+  color: black;
+  padding: 5px 12px 0px 12px;
+}
+.signin-wrapper .signin .signin-form .auth a,
+.signin-wrapper .signin .signin-form .reg a {
+  font-size: 14px;
+  color: #73751C;
+}
+.signin-wrapper .signin .signin-form .auth i,
+.signin-wrapper .signin .signin-form .reg i {
+  color: red;
+}
+.signin-wrapper .signin .signin-form .showPassword {
+  position: relative;
+}
+.signin-wrapper .signin .signin-form .showPassword input {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+}
+.signin-wrapper .signin .signin-form .showPassword label {
+  display: inline-block;
+  margin-left: 17px;
+  vertical-align: baseline;
+}
 .signin-wrapper .content {
   height: 100%;
   background: url('../images/notepad.jpg') left bottom no-repeat #F9FC73;
   background-size: contain;
   background-blend-mode: overlay;
+  text-align: center;
+  padding-top: 21%;
+}
+.signin-wrapper .content p {
+  font-size: 20px;
+  font-weight: bold;
+  color: #73751C;
 }
 .signup-wrapper {
   height: 100%;
@@ -31,4 +95,20 @@ body {
   background: url('../images/notepad.jpg') left bottom no-repeat #F9FC73;
   background-size: contain;
   background-blend-mode: overlay;
+}
+.form-control:focus {
+  border-color: #F9FC53;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #f9fb4a;
+}
+@media (max-width: 767px) {
+  header {
+    display: block;
+    height: 10%;
+    background-color: #F9FC73;
+  }
+  .signin-wrapper .content {
+    display: none;
+  }
 }

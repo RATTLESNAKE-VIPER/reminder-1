@@ -16,6 +16,7 @@ class Activation extends React.Component {
   }
   componentDidMount(){
   	var user = this.fetchUserFromParams(window.location.search)
+    console.log("user--------------",user)
   	activateUser(user).
   	then(function(data){
   		console.log(data)

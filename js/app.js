@@ -4,13 +4,14 @@ import Tasks from "./tasks";
 import SignUp from "./signup";
 import { Link } from 'react-router';
 import {auth_login} from "../sdk/sdk";
+import { connect } from 'react-redux';
 
 
 class App extends React.Component {
 	constructor(){
 		super();
 		this.state = {
-			user         : undefined
+			user : "rohini joshi"
 		}
 	}
   componentDidUpdate(prevProps, prevState){
@@ -22,28 +23,31 @@ class App extends React.Component {
 	componentWillMount(){
 		var self = this;
 		var access_token = window.location.href.split("&")[1]
+		console.log("this.context.redux.getState()",this.context)
 		if(!this.state.user){
-			this.props.history.replace("/signin");
+			//this.props.history.replace("/signin");
 		}
-		if(access_token){
+
+		if(access_token && access_token.split('=')[0]==="access_token"){
 			auth_login(access_token)
 			.then(function(data){
 				console.log("data------------",data)
 			})
 		}
 	}
-	
+
 	render() {
 		return (
 			<div className="app-wrap">
+				<header> Header</header>
 				{this.props.children}
 			</div>
 		)
 	}
-}
 
-App.contextTypes = {
-  router: React.PropTypes.object
-};
-export default App;
+}
+function mapStateToProps(state) {
+	return state;
+}
+export default connect(mapStateToProps)(App);
 

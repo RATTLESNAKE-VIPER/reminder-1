@@ -9,7 +9,7 @@ var User       = require("./schema").UserSchema
 var rest       = require('rest')
 
 mongoose.connect('mongodb://localhost/reminder')
-var db = mongoose.connection
+var db = mongoose.connection;
 
 app.use(bodyParser.json())
 
@@ -51,9 +51,9 @@ app.post('/add',  function(req, res){
 
 app.post('/registerUser',  function(req, res){ 
   User.findOne({email: req.body.email}, function(err, data){
-    var password_salt = userHelper.generateSalt()
-    var cryptedPswd = userHelper.computeHash(req.body.password, password_salt)
-    var userObj = {
+    var password_salt= userHelper.generateSalt()
+    var cryptedPswd  = userHelper.computeHash(req.body.password, password_salt)
+    var userObj      = {
       crypted_password : cryptedPswd,
       password_salt : password_salt,
       username      : req.body.username,
@@ -92,17 +92,20 @@ app.post('/registerUser',  function(req, res){
 })
 
 app.post('/activateUser', function(req, res) {
+  console.log("in activateUser-------",req.body);
   User.findOne({
     email   : req.body.email,
     username: req.body.username
   }, function(err, user){
+  console.log("in activateUser--found-----",user);
     if(!user){
       res.send("Your registration information seems wrong. Please register again!")
     } else{
       user.update({
-        activate: true
+        activated: true
       }, function(err, updated){
-        res.send("Your account has been activated. Please login in into keepatab and have fun.")
+        console.log("updated-------",updated)
+        res.send("Your account has been activated. Please login in into keepatab and have fun.",updated)
       })
     }
   })
@@ -165,7 +168,7 @@ app.post('/auth_login', function(req, res){
           authtoken: userHelper.generateAuthtoken()
         }, function(err, updated){
           User.findOne({_id:user._id},function(err, data){
-            console.log("data in old user-------",data)
+            console.log("data in old user-------",data, updated)
             res.send(data)
           })
         })

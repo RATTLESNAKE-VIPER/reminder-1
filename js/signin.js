@@ -1,6 +1,8 @@
 import React from 'react';
-import { login } from "../sdk/sdk";
 import { Link } from 'react-router';
+import Content from "./content";
+import { connect } from 'react-redux';
+import {loginAction} from './actions/userActions';
 
 class SignIn extends React.Component {
 	constructor(){
@@ -10,7 +12,17 @@ class SignIn extends React.Component {
 			showPassword : false
 		}
 	}
-	
+	componentDidMount(){
+		console.log("this.props.user",this.props.user)
+		if(this.props.user && this.props.user.entity.email){
+			this.props.history.replace("/dashboard");
+		}
+	}
+	componentWillReceiveProps(nextProps){
+		if(this.props.user !== nextProps.user && nextProps.user && nextProps.user.entity.email){
+			this.props.history.replace("/dashboard");
+		}
+	}
 	showPassword(e){
 		if(this.state.showPassword){
 			this.setState({
@@ -26,18 +38,15 @@ class SignIn extends React.Component {
 	}
 
 	signIn() {
-		/*var userDetails = {
+		var userDetails = {
 			username: this.refs.username.value,
 			email   : this.refs.email.value,
 			password: this.refs.password.value
 		}
-		login(userDetails)
-		.then(function(user){
-			console.log("user-----------",user)
-		})*/
+		this.props.dispatch(loginAction(userDetails))
 	}
 	authLogin(){
-		/*var e               = function(u) {return encodeURIComponent(u);}
+		var e               = function(u) {return encodeURIComponent(u);}
 		var client_secret   = "SQ9vGcHSKroo-tvVFXO-Wi21";
 		var base            = 'https://accounts.google.com/o/oauth2/auth';
 		var response_type   = e('token');
@@ -55,27 +64,37 @@ class SignIn extends React.Component {
       '&state=' + state +
       '&approval_prompt=' + approval_prompt;
     window.location.href = base;
-    return false;*/
+    return false;
    }
 	render() {
 		var type = this.state.type;
 		return (
 			<div className="signin-wrapper form-group">
-				<div className="content col-md-8">
-					<p>Welcome to xyz!</p>
-				</div>
+				<Content />
 				<div className="signin col-md-4">
-					<input ref="email" className="form-control" placeholder="email"></input>
-					<input ref="username" className="form-control" placeholder="username"></input>
-					<input ref="password" className="form-control" type={type} placeholder="password"></input>
-					<input className="form-control" type="checkbox" onChange={this.showPassword.bind(this)}>Show password</input>
-					<input className="form-control" type="button" value="Login" onClick={this.signIn.bind(this)}></input>
-					<button onClick={this.authLogin.bind(this)}>Sign in with google</button>
-					<Link to="/signup">Register first!</Link>
+					<div className="signin-form">
+						<input ref="email" className="form-control input" placeholder="email"></input>
+						<input ref="username" className="form-control input" placeholder="username"></input>
+						<input ref="password" className="form-control input" type={type} placeholder="password"></input>
+						{/*<div className="showPassword">
+							<input id="check" className="form-control" type="checkbox" onChange={this.showPassword.bind(this)}></input>
+							<label HTMLFor="check">Show password</label>
+						</div>*/}
+						<input className="form-control input loginbtn" type="button" value="Login" onClick={this.signIn.bind(this)}></input>
+						<div className="auth">
+							<a href="#" onClick={this.authLogin.bind(this)}><i className ="fa fa-google-plus"></i> Sign in with google</a>
+						</div>
+						<div className="reg">
+							<Link to="/signup">Register first!</Link>
+						</div>
+					</div>
 				</div>
 			</div>
 		)
 	}
 }
 
-export default SignIn;
+function mapStateToProps(state) {
+	return state;
+}
+export default connect(mapStateToProps)(SignIn);
