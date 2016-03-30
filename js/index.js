@@ -21,10 +21,13 @@ import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
 import persistState, {mergePersistedState} from 'redux-localstorage';
 
 const createPersistentStore = compose(
-  persistState()
+  persistState(),
+  applyMiddleware(thunk)
 )(createStore)
 
-const store = createPersistentStore()
+const store = createPersistentStore(
+	reducer
+)
 
 store.subscribe(function(){
   console.log("subscribe",store.getState())

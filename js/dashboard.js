@@ -40,10 +40,17 @@ class Dashboard extends React.Component {
 
 	render(){
 		return (
-			<div>
-				<textarea ref="input" placeholder="Enter task"/>
+			<div className="dashboard">
+			<nav className="">
+				<ul className="nav nav-pills nav-stacked">
+					<li><a href="#">Tasks</a></li>
+					<li><a href="#">Analytics</a></li>
+				</ul>
+			</nav>
+			<div>Tasks will be here</div>
+				{/*<textarea ref="input" placeholder="Enter task"/>
 				<button onClick={this.addTask.bind(this)}>Add task</button>
-				{/*<Tasks list={this.state.list} />*/}
+				<Tasks list={this.state.list} />*/}
 			</div>
 		)
 	}

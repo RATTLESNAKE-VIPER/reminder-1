@@ -12,7 +12,7 @@ module.exports = css;
 
 },{"./../node_modules/cssify":18}],3:[function(require,module,exports){
 var inject = require('./../node_modules/cssify');
-var css = "html,\nbody {\n  min-height: 100%;\n  height: 100%;\n}\nheader {\n  display: none;\n}\n#app,\n.app-wrap {\n  height: 100%;\n}\n.signin-wrapper {\n  overflow: hidden;\n  height: 100%;\n  margin: 0px;\n}\n.signin-wrapper .signin {\n  height: 100%;\n}\n.signin-wrapper .signin .signin-form {\n  width: 75%;\n  margin-top: 50%;\n  margin-left: 41px;\n}\n.signin-wrapper .signin .signin-form .input {\n  margin: 10px;\n  outline: none!important;\n  border: 1px solid #D2CFCF;\n  lcolor: #73751C;\n  box-shadow: none!important;\n}\n.signin-wrapper .signin .signin-form .input:focus {\n  border-color: #F9FC53;\n  outline: 0;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #f9fb4a;\n}\n.signin-wrapper .signin .signin-form .loginbtn {\n  background-color: #F9FC53;\n}\n.signin-wrapper .signin .signin-form .auth,\n.signin-wrapper .signin .signin-form .reg {\n  width: auto;\n  margin: 0px 4px 0px 4px;\n  text-align: center;\n  font-weight: bold;\n  font-size: 12px;\n  color: black;\n  padding: 5px 12px 0px 12px;\n}\n.signin-wrapper .signin .signin-form .auth a,\n.signin-wrapper .signin .signin-form .reg a {\n  font-size: 14px;\n  color: #73751C;\n}\n.signin-wrapper .signin .signin-form .auth i,\n.signin-wrapper .signin .signin-form .reg i {\n  color: red;\n}\n.signin-wrapper .signin .signin-form .showPassword {\n  position: relative;\n}\n.signin-wrapper .signin .signin-form .showPassword input {\n  position: absolute;\n  margin: 0;\n  padding: 0;\n}\n.signin-wrapper .signin .signin-form .showPassword label {\n  display: inline-block;\n  margin-left: 17px;\n  vertical-align: baseline;\n}\n.signin-wrapper .content {\n  height: 100%;\n  background: url('../images/notepad.jpg') left bottom no-repeat #F9FC73;\n  background-size: contain;\n  background-blend-mode: overlay;\n  text-align: center;\n  padding-top: 21%;\n}\n.signin-wrapper .content p {\n  font-size: 20px;\n  font-weight: bold;\n  color: #73751C;\n}\n.signup-wrapper {\n  height: 100%;\n}\n.signup-wrapper .signup {\n  height: 100%;\n}\n.signup-wrapper .content {\n  height: 100%;\n  background: url('../images/notepad.jpg') left bottom no-repeat #F9FC73;\n  background-size: contain;\n  background-blend-mode: overlay;\n}\n.form-control:focus {\n  border-color: #F9FC53;\n  outline: 0;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #f9fb4a;\n}\n@media (max-width: 767px) {\n  header {\n    display: block;\n    height: 10%;\n    background-color: #F9FC73;\n  }\n  .signin-wrapper .content {\n    display: none;\n  }\n}\n";
+var css = "html,\nbody {\n  min-height: 100%;\n  height: 100%;\n}\nheader {\n  display: block;\n  height: 15%;\n  background-color: #F9FC73;\n}\n#app,\n.app-wrap {\n  height: 100%;\n}\n.signin-wrapper {\n  overflow: hidden;\n  height: 100%;\n  margin: 0px;\n}\n.signin-wrapper .signin {\n  height: 100%;\n}\n.signin-wrapper .signin .signin-form {\n  width: 75%;\n  margin-top: 50%;\n  margin-left: 41px;\n}\n.signin-wrapper .signin .signin-form .input {\n  margin: 10px;\n  outline: none!important;\n  border: 1px solid #D2CFCF;\n  lcolor: #73751C;\n  box-shadow: none!important;\n}\n.signin-wrapper .signin .signin-form .input:focus {\n  border-color: #F9FC53;\n  outline: 0;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #f9fb4a;\n}\n.signin-wrapper .signin .signin-form .loginbtn {\n  background-color: #F9FC53;\n}\n.signin-wrapper .signin .signin-form .auth,\n.signin-wrapper .signin .signin-form .reg {\n  width: auto;\n  margin: 0px 4px 0px 4px;\n  text-align: center;\n  font-weight: bold;\n  font-size: 12px;\n  color: black;\n  padding: 5px 12px 0px 12px;\n}\n.signin-wrapper .signin .signin-form .auth a,\n.signin-wrapper .signin .signin-form .reg a {\n  font-size: 14px;\n  color: #73751C;\n}\n.signin-wrapper .signin .signin-form .auth i,\n.signin-wrapper .signin .signin-form .reg i {\n  color: red;\n}\n.signin-wrapper .signin .signin-form .showPassword {\n  position: relative;\n}\n.signin-wrapper .signin .signin-form .showPassword input {\n  position: absolute;\n  margin: 0;\n  padding: 0;\n}\n.signin-wrapper .signin .signin-form .showPassword label {\n  display: inline-block;\n  margin-left: 17px;\n  vertical-align: baseline;\n}\n.signin-wrapper .content {\n  height: 100%;\n  background: url('../images/notepad.jpg') left bottom no-repeat #F9FC73;\n  background-size: contain;\n  background-blend-mode: overlay;\n  text-align: center;\n  padding-top: 21%;\n}\n.signin-wrapper .content p {\n  font-size: 20px;\n  font-weight: bold;\n  color: #73751C;\n}\n.signup-wrapper {\n  height: 100%;\n}\n.signup-wrapper .signup {\n  height: 100%;\n}\n.signup-wrapper .content {\n  height: 100%;\n  background: url('../images/notepad.jpg') left bottom no-repeat #F9FC73;\n  background-size: contain;\n  background-blend-mode: overlay;\n}\n.form-control:focus {\n  border-color: #F9FC53;\n  outline: 0;\n  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #f9fb4a;\n}\nnav {\n  width: 20%;\n  background-color: aliceblue;\n  height: 100%;\n}\n.dashboard {\n  height: 100%;\n}\n@media (max-width: 767px) {\n  header {\n    display: block;\n    height: 15%;\n    background-color: #F9FC73;\n  }\n  .signin-wrapper .content {\n    display: none;\n  }\n}\n";
 inject(css, undefined, '_1bk61ha');
 module.exports = css;
 
@@ -408,7 +408,7 @@ var Dashboard = function (_React$Component) {
 	}, {
 		key: "render",
 		value: function render() {
-			return _react2.default.createElement("div", null, _react2.default.createElement("textarea", { ref: "input", placeholder: "Enter task" }), _react2.default.createElement("button", { onClick: this.addTask.bind(this) }, "Add task"));
+			return _react2.default.createElement("div", { className: "dashboard" }, _react2.default.createElement("nav", { className: "" }, _react2.default.createElement("ul", { className: "nav nav-pills nav-stacked" }, _react2.default.createElement("li", null, _react2.default.createElement("a", { href: "#" }, "Tasks")), _react2.default.createElement("li", null, _react2.default.createElement("a", { href: "#" }, "Analytics")))), _react2.default.createElement("div", null, "Tasks will be here"));
 		}
 	}]);
 
@@ -479,15 +479,15 @@ var _reduxLocalstorage = require("redux-localstorage");
 var _reduxLocalstorage2 = _interopRequireDefault(_reduxLocalstorage);
 
 function _interopRequireDefault(obj) {
-		return obj && obj.__esModule ? obj : { default: obj };
+	return obj && obj.__esModule ? obj : { default: obj };
 }
 
-var createPersistentStore = (0, _redux.compose)((0, _reduxLocalstorage2.default)())(_redux.createStore);
+var createPersistentStore = (0, _redux.compose)((0, _reduxLocalstorage2.default)(), (0, _redux.applyMiddleware)(_reduxThunk2.default))(_redux.createStore);
 
-var store = createPersistentStore();
+var store = createPersistentStore(_reducer2.default);
 
 store.subscribe(function () {
-		console.log("subscribe", store.getState());
+	console.log("subscribe", store.getState());
 });
 
 //const history = syncHistoryWithStore(browserHistory, store)
